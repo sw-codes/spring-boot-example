@@ -13,6 +13,19 @@ services:
     networks:
       - postgres
     restart: unless-stopped
+  swcodes-spring-boot-api:
+    container_name: swcodes-spring-boot-api
+    image: swcodes/swcodes-spring-boot-api
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/customer
+    ports:
+      - "8080:8080"
+    networks:
+      - db
+    depends_on:
+      - db
+    restart: unless-stopped
+
   pgadmin:
     container_name: pgadmin
     image: dpage/pgadmin4
