@@ -3,21 +3,18 @@ package com.swcode.customer;
 import com.swcode.exception.DuplicateResourceException;
 import com.swcode.exception.RequestValidationException;
 import com.swcode.exception.ResourceNotFoundException;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,11 +23,14 @@ class CustomerServiceTest {
 
     @Mock
     private CustomerDao customerDao;
+    @Mock
+    private PasswordEncoder passwordEncoder;
     private CustomerService underTest;
+    private final CustomerDTOMapper customerDTOMapper = new CustomerDTOMapper();
 
     @BeforeEach
     void setUp() {
-        underTest = new CustomerService(customerDao);
+        underTest = new CustomerService(customerDao, passwordEncoder, customerDTOMapper);
     }
 
     @Test
@@ -47,14 +47,16 @@ class CustomerServiceTest {
                 id,
                 "al",
                 "al@gmail.com",
-                10
-        );
+                "password", 10,
+                Gender.MALE);
         when(customerDao.selectCustomerById(id))
                 .thenReturn(Optional.of(customer));
 
-        Customer actual = underTest.getCustomer(id);
+        CustomerDTO expected = customerDTOMapper.apply(customer);
 
-        assertThat(actual).isEqualTo(customer);
+        CustomerDTO actual = underTest.getCustomer(id);
+
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -76,8 +78,13 @@ class CustomerServiceTest {
         CustomerRegistrationRequest request = new CustomerRegistrationRequest(
                 "al",
                 email,
-                39
+                "password", 39,
+                Gender.MALE
         );
+        String passwordHash = "4564564";
+
+        when(passwordEncoder.encode(request.password())).thenReturn(passwordHash);
+
         underTest.addCustomer(request);
 
         ArgumentCaptor<Customer> customerArgumentCaptor = ArgumentCaptor.forClass(Customer.class);
@@ -90,6 +97,7 @@ class CustomerServiceTest {
         assertThat(capturedCustomer.getName()).isEqualTo(request.name());
         assertThat(capturedCustomer.getEmail()).isEqualTo(request.email());
         assertThat(capturedCustomer.getAge()).isEqualTo(request.age());
+        assertThat(capturedCustomer.getPassword()).isEqualTo(passwordHash);
     }
 
     @Test
@@ -100,7 +108,8 @@ class CustomerServiceTest {
         CustomerRegistrationRequest request = new CustomerRegistrationRequest(
                 "al",
                 email,
-                39
+                "password", 39,
+                Gender.MALE
         );
         assertThatThrownBy(() -> underTest.addCustomer(request))
                 .isInstanceOf(DuplicateResourceException.class)
@@ -140,8 +149,8 @@ class CustomerServiceTest {
                 id,
                 "al",
                 "al@gmail.com",
-                10
-        );
+                "password", 10,
+                Gender.MALE);
         when(customerDao.selectCustomerById(id))
                 .thenReturn(Optional.of(customer));
 
@@ -173,8 +182,8 @@ class CustomerServiceTest {
                 id,
                 "al",
                 "al@gmail.com",
-                10
-        );
+                "password", 10,
+                Gender.MALE);
         when(customerDao.selectCustomerById(id))
                 .thenReturn(Optional.of(customer));
 
@@ -203,8 +212,8 @@ class CustomerServiceTest {
                 id,
                 "al",
                 "al@gmail.com",
-                10
-        );
+                "password", 10,
+                Gender.MALE);
         when(customerDao.selectCustomerById(id))
                 .thenReturn(Optional.of(customer));
 
@@ -236,8 +245,8 @@ class CustomerServiceTest {
                 id,
                 "al",
                 "al@gmail.com",
-                10
-        );
+                "password", 10,
+                Gender.MALE);
         when(customerDao.selectCustomerById(id))
                 .thenReturn(Optional.of(customer));
 
@@ -266,8 +275,8 @@ class CustomerServiceTest {
                 id,
                 "al",
                 "al@gmail.com",
-                10
-        );
+                "password", 10,
+                Gender.MALE);
         when(customerDao.selectCustomerById(id))
                 .thenReturn(Optional.of(customer));
 
@@ -293,8 +302,8 @@ class CustomerServiceTest {
                 id,
                 "al",
                 "al@gmail.com",
-                10
-        );
+                "password", 10,
+                Gender.MALE);
         when(customerDao.selectCustomerById(id))
                 .thenReturn(Optional.of(customer));
 

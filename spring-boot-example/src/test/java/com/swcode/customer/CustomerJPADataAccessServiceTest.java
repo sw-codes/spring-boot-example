@@ -1,14 +1,11 @@
 package com.swcode.customer;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class CustomerJPADataAccessServiceTest {
@@ -51,8 +48,8 @@ class CustomerJPADataAccessServiceTest {
                 1,
                 "al",
                 "al@gmail.com",
-                44
-        );
+                "password", 44,
+                Gender.MALE);
 
         underTest.insertCustomer(customer);
 
@@ -92,8 +89,8 @@ class CustomerJPADataAccessServiceTest {
                 1,
                 "al",
                 "al@gmail.com",
-                44
-        );
+                "password", 44,
+                Gender.MALE);
 
         underTest.updateCustomer(customer);
 

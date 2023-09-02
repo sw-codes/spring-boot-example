@@ -1,14 +1,11 @@
 package com.swcode.customer;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,8 +28,8 @@ class CustomerRowMapperTest {
                 1,
                 "al",
                 "al@gmail.com",
-                19
-        );
+                "password", 19,
+                Gender.MALE);
 
         assertThat(actual).isEqualTo(expected);
     }
