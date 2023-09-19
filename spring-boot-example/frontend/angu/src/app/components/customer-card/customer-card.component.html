@@ -1,0 +1,38 @@
+<p-card [style]="{width: '316px'}" styleClass="p-card-shadow text-center">
+  <ng-template pTemplate="header">
+    <div>
+      <img
+        src="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+        height="120px"
+        class="border-round-top cover"
+        alt="card">
+    </div>
+    <div class="flex justify-content-center" style="margin-top: -50px">
+      <img
+        [src]="customerImage"
+        class="customer-avatar">
+    </div>
+  </ng-template>
+  <ng-template pTemplate="content">
+    <p-badge
+      [value]="'' + (customerIndex + 1)"
+    ></p-badge>
+    <h2>{{customer.name}}</h2>
+    <p class="text-gray-600">{{customer.email}}</p>
+    <p class="text-gray-600">{{customer.age}} | {{customer.gender}}</p>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      label="Update"
+      class="p-button-secondary p-button-outlined p-button-rounded"
+      (click)="onUpdate()"
+    ></button>
+    <button
+      pButton
+      label="Delete"
+      class="p-button-danger p-button-outlined p-button-rounded"
+      (click)="onDelete()"
+    ></button>
+  </ng-template>
+</p-card>

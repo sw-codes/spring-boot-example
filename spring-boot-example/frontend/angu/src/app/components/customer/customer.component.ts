@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {CustomerDTO} from "../../models/customer-dto";
 import {CustomerService} from "../../services/customer/customer.service";
 import {CustomerRegistrationRequest} from "../../models/customer-registration-request";
-import {MessageService} from "primeng/api";
+import {ConfirmationService, MessageService} from "primeng/api";
 
 @Component({
   selector: 'app-customer',
@@ -12,12 +12,14 @@ import {MessageService} from "primeng/api";
 export class CustomerComponent implements OnInit {
 
   display: any = false;
+  operation: 'create' | 'update' = 'create';
   customers: Array<CustomerDTO> = [];
   customer: CustomerRegistrationRequest = {};
 
   constructor(
     private customerService: CustomerService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService
   ) {
   }
 
@@ -36,9 +38,10 @@ export class CustomerComponent implements OnInit {
 
   save(customer: CustomerRegistrationRequest) {
     if (customer) {
-      this.customerService.registerCustomer(customer)
-        .subscribe({
-          next: () => {
+      if (this.operation === 'create') {
+        this.customerService.registerCustomer(customer)
+          .subscribe({
+            next: () => {
               this.findAllCustomers();
               this.display = false;
               this.customer = {};
@@ -47,8 +50,62 @@ export class CustomerComponent implements OnInit {
                 summary:'Customer saved',
                 detail:`Customer ${customer.name} was successfully saved.`
               });
-          }
-        });
+            }
+          });
+      } else if (this.operation === 'update') {
+        this.customerService.updateCustomer(customer.id, customer)
+          .subscribe({
+            next: () => {
+              this.findAllCustomers();
+              this.display = false;
+              this.customer = {};
+              this.messageService.add({
+                severity:'success',
+                summary:'Customer updated',
+                detail:`Customer ${customer.name} was successfully updated.`
+              });
+            }
+          });
+      }
+
     }
+  }
+
+  deleteCustomer(customer: CustomerDTO) {
+    this.confirmationService.confirm({
+      header: 'delete customer',
+      message: `are you sure you want to delete ${customer.name}? you can\'t undo this operation.`,
+      accept: () => {
+        this.customerService.deleteCustomer(customer.id)
+          .subscribe({
+            next: () => {
+              this.findAllCustomers();
+              this.messageService.add({
+                severity:'success',
+                summary:'Customer deleted',
+                detail:`Customer ${customer.name} was successfully deleted.`
+              });
+            }
+          });
+      }
+    })
+  }
+
+  updateCustomer(customerDTO: CustomerDTO) {
+    this.display = true;
+    this.customer = customerDTO;
+    this.operation = 'update';
+  }
+
+  createCustomer() {
+    this.display = true;
+    this.customer = {};
+    this.operation = 'create';
+  }
+
+  cancel() {
+    this.display = false;
+    this.customer = {};
+    this.operation = 'create';
   }
 }
